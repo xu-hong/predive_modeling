@@ -156,11 +156,12 @@ Cols <- function (vec) {
   return (cols[as.numeric (as.factor (vec))])
 }
 
-hclust_and_plot <- function(x, d, method) {
+hclust_and_plot <- function(x, d, k = 4, method) {
   ##
   ## Input: 
   ## x, the data matrix 
   ## d, the pairwise Euclidean distance 
+  ## k, number of clusters chosen
   ## method, the hierarchical clustering linkage
   ##
   ## Returns:
@@ -169,7 +170,7 @@ hclust_and_plot <- function(x, d, method) {
   
   hc_4 <- hclust(d, method = method)
   # cut into 4 clusters
-  c_labels <- cutree(hc_4, k = 4)
+  c_labels <- cutree(hc_4, k = k)
   # plot points in x
   plot(x[,1:2], col =Cols(c_labels), pch =19, xlab ="X1",ylab="X2")
   # plot dendorgram
@@ -178,16 +179,16 @@ hclust_and_plot <- function(x, d, method) {
 
 }
 # run hierarchical agglomerative clustering with single linkage
-hclust_and_plot(x, d, "single")
+hclust_and_plot(x, d, 4, "single")
 
 ## b)
 # repeat a for complete linkage
-hclust_and_plot(x, d, "complete")
+hclust_and_plot(x, d, 4, "complete")
 
 ## c)
 ## Repeat a and b but passing d^2
-hclust_and_plot(x, d^2, "single")
-hclust_and_plot(x, d^2, "complete")
+hclust_and_plot(x, d^2, 4, "single")
+hclust_and_plot(x, d^2, 4, "complete")
 
 ## A monotone increasing transformation does not change the clustering assignment
 ## or the dendrogram for single or complete linkage.
@@ -197,20 +198,32 @@ hclust_and_plot(x, d^2, "complete")
 
 ## d)
 At step $m \in {1, \cdots, N-1}$, $N$ = number of points:\newline
-\indent Suppose we have clusters ${1, \cdots, K_m}$ at step $m$. \newline
-\indent First, for $G, H \in {1, \cdots, K_m}$, the cluster dissimilarities:
+\ Suppose we have clusters ${1, \cdots, K_m}$ at step $m$. \newline
+\ First, for $G, H \in {1, \cdots, K_m}$, the cluster dissimilarities:
 $$d_{single}(G, H) = \min\limits_{g \in G, h \in H} h(d_{gh})$$
-\indent The pair of points $g_m, h_m$ chosen to represent the cluster dissimilarites between $G, H$ would be the same as the one before transformation:
+\ The pair of points $g_m, h_m$ chosen to represent the cluster dissimilarites between $G, H$ would be the same as the one before transformation:
   $$g_m, h_m = \underset{g \in G, h \in H}{\arg\min} h(d_{gh}) = \underset{g \in G, h \in H}{\arg\min} d_{gh}$$ 
   
-\indent Then, the pair of clusters $I_m, J_m$ that has smallest simliarity: 
-  $$I, J = \underset{I, J \in {1, \cdots, K_m}}{\arg\min} d_{single}(I, J) = \underset{I, J \in {1, \cdots, K_m}}{\arg\min} h(d_{i_m, j_m}) = \underset{I, J \in {1, \cdots, K_m}}{\arg\min} d_{i_m, j_m}$$
-\indent So at step $m$, the same pair of clusters $I_m, J_m$ would be chosen to merge as prior to the transformation. 
+\ Then, the pair of clusters $I_m, J_m$ that has smallest simliarity: 
+  $$I_m, J_m = \underset{I, J \in {1, \cdots, K_m}}{\arg\min} d_{single}(I, J) = \underset{I, J \in {1, \cdots, K_m}}{\arg\min} h(d_{i_m, j_m}) = \underset{I, J \in {1, \cdots, K_m}}{\arg\min} d_{i_m, j_m}$$
+\ So at step $m$, the same pair of clusters $I_m, J_m$ would be chosen to merge as prior to the transformation. 
 Since every step we make the same merging choice, the result will be the same. 
 \newline
 \newline
-For complete linkage, the idea is the same:
-\indent At step $m$, the pair of points $g_m, h_m$ chosen to represent the cluster dissimilarites between $G, H$ would be the same as the one before transformation:
-  $$g_m, h_m = \underset{g \in G, h \in H}{\arg\max} h(d_{gh}) = \underset{g \in G, h \in H}{\arg\max} d_{gh}$$ 
+For complete linkage, the idea is the same:\newline
+\ At step $m$, the pair of points $g_m, h_m$ chosen to represent the cluster dissimilarites between $G, H$ would be the same as the one before transformation:
+  $$g_m, h_m = \underset{g \in G, h \in H}{\arg\max}\ h(d_{gh}) = \underset{g \in G, h \in H}{\arg\max}\ d_{gh}$$ 
 The rest of the proof is the same as the pair of clusters $I_m, J_m$ is also chosen based on the smallest dissimilairity.
+
+```{r}
+## e)
+# default k to 4
+hclust_and_plot(x, d, 4, "average")
+hclust_and_plot(x, d^2, 4, "average")
+## the results are the same
+# change number of clusters to 3
+hclust_and_plot(x, d, k = 3, "average")
+hclust_and_plot(x, d^2, k = 3, "average")
+## the results are different!
+```
 
