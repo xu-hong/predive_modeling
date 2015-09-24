@@ -1,0 +1,18 @@
+{
+    "contents" : "---\ntitle: \"Lab 4\"\nauthor: \"Hong Xu\"\nteam: Hong Xu, Feilun Wu\ndate: \"September 21, 2015\"\noutput: pdf_document\n---\n\n## Lab 4 \n### Hong Xu\n### 09/21/2015\n### Team member: Feilun Wu\n\n```{r}\nload(\"pageRank.RData\")\n## 1. create a link count\n# transpose first, make sure myData is in the (j -> i) format\nmyData <- t(myData)\nn_links <- colSums(myData)\nM <- diag(n_links)\n\n## 2. inverse the link matrix\nMInv <- solve(M)\n\n## 3. compute the BrokenRank\nBR <- myData %*% MInv\nBR_eig <- eigen(BR)\n# find the eigenvectors with eigenvalue 1\nBR_vector <- BR_eig$vectors[, which(signif(BR_eig$values, 6) == 1)]\n# normalize \n(BR_vector <- scale(BR_vector, center = FALSE, \n                    scale = as.numeric(apply(as.matrix(BR_vector), 2, sum))))\n## Problems: the resulting vectors are not UNIQUE, \n## which means the BrokenRank vector is ambiguously defined.\n\n## 4. compute PageRank\nn <- nrow(BR)\nE <- matrix(rep(1, n*n), n, n)\nd <- 0.85\n# make a strong connected Markov Chain\nPR <- ((1 - d) / n) * E + d * myData %*% MInv\n# the rest steps are the same as BrokenRank\nPR_eig <- eigen(PR)\nPR_vector <- PR_eig$vectors[, which(signif(PR_eig$values, 6) == 1)]\n(PR_vector <- scale(PR_vector, center = FALSE, scale = as.numeric(sum(PR_vector))))\n\n## Now we have a unique PageRank vector.\n```\n\n```{r}\nmyNewData <- read.csv(\"http://www.ats.ucla.edu/stat/data/mat25.txt\", \n                      header = FALSE, sep = \" \")\nmyPageRank <- function(link_matrix, d=0.85) {\n  ##\n  ## The function that calculate the PageRank vector\n  ## for a given link matrix.\n  ## \n  ## Input:\n  ## link_matrix, a matrix with links go i -> j\n  ## d, numerical, the dampening parameter\n  ##\n  ## Output:\n  ## p, the PageRank vector\n  ##\n  \n  # transpose the link matrix so that we have j -> i\n  link_matrix <- t(link_matrix)\n  # compose the matrix to find the PageRank vector\n  M <- diag(colSums(link_matrix))\n  MInv <- solve(M)\n  A <- link_matrix %*% MInv\n  # build a strong conneted Markov Chain\n  n <- nrow(A)\n  E <- matrix(rep(1, n*n), n, n)\n  A <- ((1 - d) / n) * E + d * A\n  # find the eigenvector\n  A_eig <- eigen(A)\n  PR_vector <- A_eig$vectors[, which(signif(A_eig$values, 6) == 1)]\n  # normalize \n  PR_vector <- scale(PR_vector, center = FALSE, \n                     scale = as.numeric(apply(as.matrix(PR_vector), 2, sum)))\n  \n  return(as.numeric(PR_vector))\n}\n\nmyPageRank(as.matrix(myNewData), 0.85)\n```\n\n",
+    "created" : 1442850603824.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2731310818",
+    "id" : "B3753FA4",
+    "lastKnownWriteTime" : 1442868825,
+    "path" : "~/Documents/Duke/Term 3/sta 521/lab4/Hong_Xu_solutions_Lab4.Rmd",
+    "project_path" : "Hong_Xu_solutions_Lab4.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}

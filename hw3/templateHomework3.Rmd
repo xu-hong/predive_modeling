@@ -1,0 +1,68 @@
+---
+title: "Template for Homework 3"
+author: "Rebecca C. Steorts"
+date: "September 9, 2015"
+output: 
+  pdf_document:
+      includes:
+          in_header: multisymbols.sty
+---
+
+Your homework must be submitted in R Markdown format. Your responses must be supported by both textual explanations and the code you generate to produce your result. (Just examining your various objects in the ``Environment" section of RStudio is insufficient--you must use scripted commands.) Use the naming convention from Lab 1 or points will be deducted. Finally, please show all steps in your write up for full credit. (You must upload your .Rmd and .pdf file to Sakai).
+
+Hints: In problem 3, you may find the following commands useful:
+\texttt{colMeans, var, round, dvmnorm, contour}. 
+
+\begin{enumerate}
+\item  The total variance of $\bX$ is the MSE of the mean:
+$$E|| \bX - E(\bX) ||^2 = \tr(\var(\bX)).$$ Prove this. 
+
+\item Suppose $\bY \sim N_n (0 ,I)$ and let $A$ be symmetric. Show that $$\bY^TA\bY \stackrel{dist} {=}\sum_i \lambda_i W_i,$$ where 
+$W_i \stackrel{iid}{\sim} \chi_1^2$ and $\lambda_1,\ldots,\lambda_n$ are the eigenvalues of $A.$
+
+\item
+A very simple model of poverty rates would be as follows: for state $i$ in year $t$, the poverty rate $Y_{it}$ is
+\[
+Y_{it} = \mu_t + U_{i} + \epsilon_{it}
+\]
+where $\mu_t$ is a nation-wide poverty rate that varies over time, $U_i$ is a
+state-specific poverty rate reflecting enduring characteristics of state $i$,
+and $\epsilon_{it}$ is some combination of fluctuations and measurement error.
+Note that $U_i$ and $\epsilon_{it}$  are independent.
+(We will see later how to decompose $U_i$ and $\epsilon_{it}$ to reflect
+state-level covariates.)\footnote{You can download the data from the course webpage. It might also to be helpful to know that the fips codes for the states may be useful as well as this command: colnames(saipe98)[1] $<-$ "fips" }
+
+For simplicity, assume that $U_i \stackrel{iid}{\sim}
+\mathcal{N}(0,\sigma^2_u)$ and $\epsilon_{it}
+\stackrel{ind}{\sim}\mathcal{N}(0,\sigma^2_{e_t})$.
+
+\begin{enumerate}
+\item Show that this model implies that there is a positive covariance for
+  within-state poverty rates over time, $\Cov{Y_{i1}, Y_{i 2}} = \Var{U_i} =
+  \sigma^2_u$.
+\item Let that $\mathbf{Y}_i = (Y_{i1}, Y_{i2})^T$.  Show that $\mathbf{Y}_i$
+  has an $\mathcal{MVN}$ distribution, and express its $\mu$ and $\Sigma$ in
+  terms of $\mu_1$, $\mu_2$, $\sigma^2_u$, $\sigma^2_{e_1}$ and
+  $\sigma^2_{e_2}$.
+\item Load the Small Area Income and Poverty Estimate (SAIPE) data for 1998 and 2005, and extract the CPS poverty rates
+  for children aged 5--17; let these be $Y_{i1}$ and $Y_{i2}$, respectively.
+  Construct a data frame which just contains these values.
+\item Find the mean poverty rates, across states, for 1998 and 2005.
+\item Find the $2\times 2$ covariance matrix for $\mathbf{Y}$.
+\item Report estimates of $\mu_1$, $\mu_2$, $\sigma^2_u$, $\sigma^2_{e_1}$ and
+  $\sigma^2_{e_2}$ from the sample mean vector and the sample covariance matrix.
+\item Make a contour plot of the MVN distribution with the mean and covariance
+  you estimated from the data.  (The $x$ axis should be 1998 child poverty
+  rates and the $y$ axis should be 2005 rates.)  Add points representing the
+  data.  Comment on whether the multivariate normal looks like a good fit to
+  this data.
+\end{enumerate}
+\end{enumerate}
+
+Please note that here are some useful command from LaTex that you can use in Markdown. 
+
+This produces text inline: We can set $x=2.$
+This produces text centered We can set $$x=2.$$
+Symbols as reviewed in one of the first lectures are $\alpha, \beta, \ldots.$
+To learn short cuts about Latex and how they work with Markdown, please see: \url{http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference}. 
+

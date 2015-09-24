@@ -1,0 +1,126 @@
+---
+title: "Lab 3"
+author: "Hong Xu"
+date: "September 7, 2015"
+output: pdf_document
+---
+* Name: Hong Xu 
+* Date: September 7, 2015
+* Team Member: Carolyn Zhang
+
+# 1. load and inspect the text data
+```{r}
+require(tm)
+load("lab3.Rdata")
+# determine how many documents are present
+length(shakespeare)
+```
+
+# 2. create a corpus 
+```{r}
+corp <- Corpus(VectorSource(shakespeare))
+
+```
+# 3. preprocess the corpus and store it to a matrix
+```{r}
+# covert to lower case
+corp <- tm_map(corp, content_transformer(tolower))
+# puntual removal
+corp <- tm_map(corp, removePunctuation)
+# number removal 
+corp <- tm_map(corp, removeNumbers)
+# stemming
+require(SnowballC)
+corp <- tm_map(corp, stemDocument)
+
+# create a document term matrix 
+dtm <- DocumentTermMatrix(corp)
+# and store it as matrix
+dtm <- as.matrix(dtm)
+dim(dtm)
+```
+
+# 4. Set the variable myQuery to the following c("something","rotten", "state","denmark")
+```{r}
+myQuery <- c("something","rotten", "state","denmark")
+```
+
+# 5. Write a function called myTextMiner() 
+```{r}
+myTextMiner <- function(query, corpus) {
+  ##
+  ## Input: 
+  ## - query: a string vector containing keywords
+  ## - corpus: a VCorpus that needs preprocessing
+  ## Output:
+  ## - result.matrix: a subset of the normalized DTM with those
+  ##   columns that are shared with the query, with one additional 
+  ##   column that contains  the  Euclidean  distance 
+  ## 
+  
+  ## 1. pre-processing
+  # convert to lower case
+  corpus <- tm_map(corpus, content_transformer(tolower))
+  # puntual removal
+  corpus <- tm_map(corpus, removePunctuation)
+  # number removal 
+  corpus <- tm_map(corpus, removeNumbers)
+  
+  ## 2. creat a document term matrix
+  # create a document term matrix 
+  dtm <- DocumentTermMatrix(corpus)
+  # and store it as matrix
+  dtm <- as.matrix(dtm)
+  
+  ## 3. pre-process the query
+  q.table <- table(myQuery)
+  # get the list of word in the query
+  q.names <- names(q.table)
+  # get the number each word occurs
+  q.values <- as.vector(q.table)
+  
+  ## 4. combine the query into the matrix
+  # make a  1 * (number of columns) dimension matrix, initialize to default value 0
+  n.row <- nrow(dtm)
+  n.col <- ncol(dtm)
+  q.row <- matrix(rep(0, n.col), 1, n.col)
+  # combine the query 
+  dtm <- rbind(dtm, q.row)
+  # assigne the words to their corresponding value 
+  dtm[n.row+1, q.names] <- q.values
+  
+  ## 5. normalize the documents 
+  # define a helper function that normalize each row
+  normalizeFunc <- function(x) {
+    # input: 
+    # x: a vector of terms for a document
+    x/sum(x)
+  }
+  # apply the normalize function to every row (documents and query) 
+  norm.dtm <- apply(dtm, 1, normalizeFunc)
+  norm.dtm <- t(norm.dtm)
+  
+  ## 6. compute the distance
+  computeDistance <- function(x, q) {
+    # input:
+    # x: a vector of normalized terms for a document
+    # q: a vector of normalized terms for the query 
+    sqrt(sum((x - q)^2))
+  }
+  distance.metric <- apply(norm.dtm, 1, computeDistance, q=norm.dtm[n.row+1,])
+  
+  ## 7. produce the result matrix
+  result.matrix <- cbind(norm.dtm[, q.names], distance.metric)
+  colnames(result.matrix) <- c(q.names, 'distanceMetric')
+  rownames(result.matrix)[n.row+1] <- "query"
+  
+  return(result.matrix)
+  
+}
+myCorp <- Corpus(VectorSource(shakespeare))
+(resultDTM <- myTextMiner(myQuery, myCorp))
+# write the DTM from the function to csv file
+write.csv(resultDTM, file="Xu_Hong_DTM.csv")
+```
+
+

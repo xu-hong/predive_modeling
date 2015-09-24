@@ -1,0 +1,50 @@
+---
+title: "Lab 2"
+author: "Hong Xu"
+date: "August 31, 2015"
+output: pdf_document
+---
+
+Task 1. 
+```{r}
+mySeq <- seq(1:25)
+mySeq
+```
+
+Task 2.
+```{r}
+# sample 5 instances from mySeq with replacement and store them in vector sampleSeq
+sampleSeq <- sample(mySeq, size=5, replace=TRUE)
+sampleSeq
+```
+
+Task 3 and 4.
+```{r}
+set.seed(1)
+myData <- rnorm(n=100, mean=0, sd=1)
+myData
+```
+
+Task 5.
+```{r}
+anotherTrivialFunction <- function(x) {
+  # tranform vector into 10*10 matrix
+  myMatrix <- matrix(x, 10, 10, byrow=TRUE)
+  # create an empty list of length 5
+  myList <- vector("list", length=5)
+  # iterate over the list and assign each element a sampled matrix 
+  for(i in 1:5) {
+    # sampling 10 rows basically means sampling row indexes
+    sampleRowIndex <- sample(1:10, size=10, replace=TRUE)
+    myList[[i]] <- myMatrix[sampleRowIndex, ]
+  }
+  return(myList)
+}
+matrix(myData, 10, 10, byrow=T)
+anotherTrivialFunction(myData)
+
+```
+
+
+
+
