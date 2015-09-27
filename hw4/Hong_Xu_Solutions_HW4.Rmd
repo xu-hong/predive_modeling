@@ -146,6 +146,52 @@ my_pagerank(L, 1)
 
 ## Problem 3
 
+(a)
+To prove the equation, we can just look what's inside $\sum_{k=1} K$. \newline
+Left:
+$$\frac{1}{2} \frac{1}{n_k} \sum_{C(i) = k} \sum_{C(j) = k} || X_i - X_j ||^2_2 = \frac{1}{2} \frac{1}{n_k} \sum_{C(i) = k} \sum_{C(j) = k} (X_i^2 + X_j^2 - 2 X_i \cdot X_j)$$
+For each $X_i$, it appears $n_k$ times, so we have 
+$$\frac{1}{2} \frac{1}{n_k} \sum_{C(i) = k} \sum_{C(j) = k} (X_i^2 + X_j^2 - 2 X_i \cdot X_j)$$
+$$= \frac{1}{2} \frac{1}{n_k} (n_k \sum_{C(i) = k} X_i^2 + n_k \sum_{C(j) = k} X_j^2 - 2 \sum_{C(i) = k} \sum_{C(j) = k} X_i \cdot X_j)$$
+$$= \frac{1}{2} \frac{1}{n_k} (2 n_k \sum_{C(i) = k} X_i^2 - 2 \sum_{C(i) = k} \sum_{C(j) = k}  X_i \cdot X_j)$$
+$$= \sum_{C(i) = k} X_i^2 - \frac {\sum_{C(i) = k} \sum_{C(j) = k} (X_i \cdot X_j)}{n_k}$$
+
+Right:
+\[\sum_{C(i) = k} ||X_i - \bar{X_k}||^2_2 = \sum_{C(i) = k} (X_i^2 + \bar{X_k}^2 - 2 X_i \cdot \bar{X_k})\]
+Since $\bar{X_k} = \frac {(\sum_{C(j) = k} X_j)}{n_k}$, the above equates
+$$\sum_{C(i) = k} (X_i^2 + \frac {(\sum_{C(j) = k} X_j)^2}{n_k^2} - 2 X_i \cdot \frac {\sum_{C(j) = k} X_j}{n_k}) = \sum_{C(i) = k} X_i^2 + \frac {(\sum_{C(j) = k} X_j)^2}{n_k} - 2 \frac {\sum_{C(i) = k} X_i \cdot \sum_{C(j) = k} X_j}{n_k}$$
+$$= \sum_{C(i) = k} X_i^2 - \frac {(\sum_{C(j) = k} X_j)^2}{n_k}$$
+
+Obviously $\frac {(\sum_{C(j) = k} X_j)^2}{n_k} == \frac {\sum_{C(i) = k} \sum_{C(j) = k} (X_i \cdot X_j)}{n_k}$, so we can prove Left == Right.
+
+(b)
+$$\sum_{i = 1}^m || Z_i - \vec c ||^2_2 = \sum_{i=1}^m \sum_{q=1}^p (z_{iq} - c_q)^2$$
+Take the derivative of with respect to $c_q, q \in {1, \dots, p}$,
+$$ \frac {\partial \sum_{i=1}^m \sum_{q=1}^p (z_{iq} - c_q)^2}{\partial c_q} = -2 \sum_{i=1}^m (z_{iq} - c_q)$$
+Let it equal to zero,
+$$ \sum_{i=1}^m (z_{iq} - c_q) = \sum_{i=1}^m (z_{iq}) - m c_q = 0$$
+We then have $c_q = \frac {\sum_{i=1}^m (z_{iq})}{m}$, and since $\frac {\partial^2 \sum_{i=1}^m \sum_{q=1}^p (z_{iq} - c_q)^2}{\partial c_q^2} = 2 m > 0$, we can show that the minimin value is reached when $c_q = \frac {\sum_{i=1}^m (z_{iq})}{m}$, for all $q \in {1, \dots, p}$, which means c is the average of the points, i.e. $\bar Z = \frac {1}{m} \sum_i Z_i$.
+
+(c) 
+At iteration t+1, the first step is minimizing over C:
+$$W_t = \sum_{k_t = 1}^K \sum_{C(i) = k_t} ||X_i - \bar{X_{k_t}}||^2_2$$
+$$=\sum_i || X_i - \bar X_{k_{t^i}} ||^2_2,\  where \ C(i) = k_{t^i}$$
+For $X_i$ and $C(i) = k^{'}_t$, if now there exists a cluster center $\bar {X_{k^{''}_t}}$ so that
+$||X_i - \bar {X_{k^{''}_t}}||^2_2 < ||X_i - \bar {X_{k^{'}_t}}||^2_2$, then C(i) will be changed to $k^{''}_t$, let $k^{''}_t$ be $k_{t+1}$ \newline
+\newline
+So after the first step, the new 
+$$W_{t+1}^{'} = \sum_i || X_i - \bar X_{k_{{t+1}^i}} ||^2_2,\ where \ C(i) = k_{{t+1}^i}$$
+$$ k_{{t+1}^i} \neq k_{t^i}, if ||X_i - \bar X_{k_{{t+1}^i}}||^2_2 < ||X_i - \bar X_{k_{t^i}}||^2_2$$
+$$  k_{{t+1}^i} = k_{t^i}, if ||X_i - \bar X_{k_{t^i}}||^2_2 \ is\ still\ the\ smallest.$$
+Obviously it is smaller than $W_t$.
+\newline
+\newline
+The second step is to minimize within each cluster by changing the cluster center to 
+$\bar X_{k_{t+1}}$, which, as proved in (b), gurantees that $W_{t+1} <= W_{t+1}^{'}$
+\newline
+\newline
+In conclusion, since both steps would result a smaller (or equal) $W$, $W_{t+1} <= W_t$.
+
 ## Problem 4
 ```{r}
 ## a)
